@@ -82,9 +82,9 @@ fn main() {
 
     let query = String::from("apple");
     if trie.find(&query) {
-        println!("{} is found in dictionary", &query);
+        println!("{} exists in dictionary", &query);
     } else {
-        println!("{} not found", &query);
+        println!("{} is not found", &query);
     }
 
     let query = String::from("pineapple");
