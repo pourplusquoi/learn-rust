@@ -9,7 +9,7 @@ struct Node {
 }
 
 impl Node {
-    fn new() -> Self {
+    pub fn new() -> Self {
         let mut node = Node {
             in_dict: false,
             children: Vec::new(),
@@ -28,17 +28,17 @@ struct Trie {
 }
 
 impl Trie {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Trie {
             root: Some(Box::new(Node::new())),
         }
     }
 
-    fn insert(&mut self, word: &str) -> () {
+    pub fn insert(&mut self, word: &str) -> () {
         Trie::insert_inl(&mut self.root, word);
     }
 
-    fn find(&self, word: &str) -> bool {
+    pub fn find(&self, word: &str) -> bool {
         Trie::find_inl(&self.root, word)
     }
 
