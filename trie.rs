@@ -75,22 +75,17 @@ impl Trie {
 fn main() {
     let mut trie = Trie::new();
 
-    let dictionary = vec![String::from("apple"), String::from("banana")];
-    for word in &dictionary {
+    let dictionary = vec!["apple", "banana"];
+    for word in dictionary {
         trie.insert(word);
     }
 
-    let query = String::from("apple");
-    if trie.find(&query) {
-        println!("{} exists in dictionary", &query);
-    } else {
-        println!("{} is not found", &query);
-    }
-
-    let query = String::from("pineapple");
-    if trie.find(&query) {
-        println!("{} exists in dictionary", &query);
-    } else {
-        println!("{} is not found", &query);
+    let query = vec!["apple", "pineapple"];
+    for word in query {
+        if trie.find(word) {
+            println!("{} exists in dictionary", word);
+        } else {
+            println!("{} is not found", word);
+        }
     }
 }
