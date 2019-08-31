@@ -25,7 +25,7 @@ impl<'a> Transaction<'a> {
     }
 }
 
-fn index<'a, T>(vec: &'a mut Vec<&mut T>, idx: usize) -> &'a mut T {
+fn index_mut<'a, T>(vec: &'a mut Vec<&mut T>, idx: usize) -> &'a mut T {
     vec.iter_mut().nth(idx).unwrap()
 }
 
@@ -52,31 +52,32 @@ impl Solution {
 
         let mut res: Vec<String> = Vec::new();
         for (_, val) in map.iter_mut() {
-            val.sort_by(|a, b| a.time.cmp(&b.time));
+            val.sort_by(|lhs, rhs| lhs.time.cmp(&rhs.time));
             // Check for name and city.
             let mut i = 0;
             let mut j = 1;
-            while j < val.len() && val[j].city == val[i].city {
-                j += 1;
-            }
-            while j < val.len() {
-                while i < j {
-                    if val[j].time - val[i].time <= 60 {
-                        res = Self::conditional_push(res, index(val, j));
-                        res = Self::conditional_push(res, index(val, i));
-                    }
+            while {
+                while j < val.len() && val[j].city == val[i].city {
+                    j += 1;
+                }
+                j < val.len()
+            } {
+                while i < j && val[j].time - val[i].time > 60 {
                     i += 1;
                 }
-                i = j - 1;
-                while j + 1 < val.len() && val[j + 1].city == val[j].city {
-                    j += 1;
-                    if val[j].time - val[i].time <= 60 {
-                        res = Self::conditional_push(res, index(val, j));
-                        res = Self::conditional_push(res, index(val, i));
-                    }
+                while i < j {
+                    res = Self::conditional_push(res, index_mut(val, i));
+                    i += 1;
                 }
-                i += 1;
-                j += 1;
+                let mut k = j;
+                while k < val.len() && val[k].city == val[j].city &&
+                      val[k].time - val[j - 1].time <= 60 {
+                    k += 1;
+                }
+                while j < k {
+                    res = Self::conditional_push(res, index_mut(val, j));
+                    j += 1;
+                }
             }
             // Check for amount.
             for t in val.iter_mut() {
@@ -85,7 +86,6 @@ impl Solution {
                 }
             }
         }
-
         res
     }
 }
