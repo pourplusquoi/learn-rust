@@ -56,7 +56,7 @@ impl<'a> Automaton<'a> {
         automaton
     }
 
-    pub fn find(&self, text: &str) -> Vec<Hit> {
+    pub fn scan(&self, text: &str) -> Vec<Hit> {
         let mut hits = Vec::new();
         let mut current: &Node = self.root.borrow();
         for i in 0..text.len() {
@@ -112,25 +112,23 @@ impl<'a> Automaton<'a> {
 
     fn initialize(&mut self) {
         Self::traverse_mut(self.root.borrow_mut(), &|node| {
-            let parent: Option<&Node>;
+            let mut current: &Node;
             unsafe {
-                parent = node.parent.as_ref();
+                current = node.parent.as_ref().unwrap();
             }
-            if let Some(mut current) = parent {
-                loop {
-                    match current.suffix {
-                        Some(suf) => {
-                            if let Some(ref box_) = suf.next[node.index] {
-                                node.suffix = Some(box_.borrow());
-                                break;
-                            }
-                            current = suf;
-                        },
-                        None => {  // Reached root.
-                            node.suffix = Some(current);
+            loop {
+                match current.suffix {
+                    Some(suf) => {
+                        if let Some(ref box_) = suf.next[node.index] {
+                            node.suffix = Some(box_.borrow());
                             break;
-                        },
-                    }
+                        }
+                        current = suf;
+                    },
+                    None => {  // Reached root.
+                        node.suffix = Some(current);
+                        break;
+                    },
                 }
             }
         });
@@ -155,9 +153,9 @@ impl<'a> Automaton<'a> {
 
     fn traverse_mut<F>(node: &mut Node, transform: &F)
         where F: Fn(&mut Node) {
-        transform(node);
         for opt in node.next.iter_mut() {
             if let Some(child) = opt {
+                transform(child);
                 Self::traverse_mut(child, transform);
             }
         }
@@ -169,7 +167,7 @@ fn main() {
     let text = "abccab";
 
     let matcher = Automaton::new(&dict);
-    let hits = matcher.find("abccab");
+    let hits = matcher.scan("abccab");
     println!("Found {} hit(s) in total in '{}'.", hits.len(), text);
 
     let mut results: HashMap<&str, Vec<BeginAt>> = HashMap::new();
