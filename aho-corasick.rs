@@ -174,8 +174,8 @@ fn main() {
 
     let mut results: HashMap<&str, Vec<BeginAt>> = HashMap::new();
     for hit in hits.iter() {
-        let entry = results.entry(
-            &text[hit.0..hit.1]).or_insert(Vec::new());
+        let entry =
+            results.entry(&text[hit.0..hit.1]).or_insert(Vec::new());
         entry.push(hit.0);
     }
     for (k, v) in results {
