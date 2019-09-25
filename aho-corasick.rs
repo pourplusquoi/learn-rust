@@ -38,12 +38,6 @@ impl<'a> Node<'a> {
     }
 }
 
-impl<'a> PartialEq for &'a Node<'a> {
-    fn eq(&self, other: &Self) -> bool {
-        (*self) as *const _ == (*other) as *const _
-    }
-}
-
 impl<'a> Automaton<'a> {
     pub fn new(dict: &Vec<&str>) -> Self {
         let mut automaton = Automaton {
