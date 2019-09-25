@@ -38,7 +38,7 @@ impl<'a> Node<'a> {
     }
 }
 
-impl<'a> PartialEq for &Node<'a> {
+impl<'a> PartialEq for &'a Node<'a> {
     fn eq(&self, other: &Self) -> bool {
         (*self) as *const _ == (*other) as *const _
     }
@@ -154,7 +154,7 @@ impl<'a> Automaton<'a> {
     fn traverse_mut<F>(node: &mut Node, transform: &F)
         where F: Fn(&mut Node) {
         for opt in node.next.iter_mut() {
-            if let Some(child) = opt {
+            if let Some(child) = opt.as_mut() {
                 transform(child);
                 Self::traverse_mut(child, transform);
             }
@@ -176,7 +176,7 @@ fn main() {
             results.entry(&text[hit.0..hit.1]).or_insert(Vec::new());
         entry.push(hit.0);
     }
-    for (k, v) in results {
+    for (k, v) in results.iter() {
         print!("Occurrance of '{}': ", k);
         for begin_at in v.iter() {
             print!("@{} ", begin_at);
