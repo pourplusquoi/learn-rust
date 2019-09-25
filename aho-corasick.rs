@@ -4,9 +4,9 @@ use std::collections::HashMap;
 use std::ptr;
 
 type BeginAt = usize;
-type Length = usize;
+type EndAt = usize;
 
-struct Hit(BeginAt, Length);
+struct Hit(BeginAt, EndAt);
 
 #[derive(Clone)]
 struct Node<'a> {
@@ -95,7 +95,7 @@ impl<'a> Automaton<'a> {
 
     fn retrieve(mut node: &Node, end_at: usize, hits: &mut Vec<Hit>) {
         if node.in_dict {
-            hits.push(Hit(end_at - node.depth, node.depth));
+            hits.push(Hit(end_at - node.depth, end_at));
         }
         loop {
             match node.dict_suffix {
@@ -106,7 +106,7 @@ impl<'a> Automaton<'a> {
                     break;
                 },
             }
-            hits.push(Hit(end_at - node.depth, node.depth));
+            hits.push(Hit(end_at - node.depth, end_at));
         }
     }
 
@@ -175,7 +175,7 @@ fn main() {
     let mut results: HashMap<&str, Vec<BeginAt>> = HashMap::new();
     for hit in hits.iter() {
         let entry = results.entry(
-            &text[hit.0..(hit.0 + hit.1)]).or_insert(Vec::new());
+            &text[hit.0..hit.1]).or_insert(Vec::new());
         entry.push(hit.0);
     }
     for (k, v) in results {
