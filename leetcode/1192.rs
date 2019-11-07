@@ -11,22 +11,21 @@ impl Solution {
         }
         let mut pre: Vec<i32> = vec![-1; n as usize];
         let mut low: Vec<i32> = vec![-1; n as usize];
-        let mut bridge: Vec<Vec<i32>> = Vec::new();
-        Self::dfs(/*count=*/0, 0, 0, &adj, &mut pre, &mut low, &mut bridge);
-        bridge
+        let mut bridges: Vec<Vec<i32>> = Vec::new();
+        Self::dfs(/*count=*/0, 0, 0, &adj, &mut pre, &mut low, &mut bridges);
+        bridges
     }
     
     fn dfs(mut count: i32, u: usize, v: usize, adj: &Vec<Vec<usize>>,
-           pre: &mut Vec<i32>, low: &mut Vec<i32>, bridge: &mut Vec<Vec<i32>>) {
+           pre: &mut Vec<i32>, low: &mut Vec<i32>, bridges: &mut Vec<Vec<i32>>) {
         count += 1;
         pre[v] = count;
         low[v] = count;
-        for w_ in &adj[v] {
-            let w = *w_;
+        for &w in adj[v].iter() {
             if pre[w] == -1 {
-                Self::dfs(count, v, w, adj, pre, low, bridge);
+                Self::dfs(count, v, w, adj, pre, low, bridges);
                 if pre[w] == low[w] {
-                    bridge.push(vec![v as i32, w as i32]);
+                    bridges.push(vec![v as i32, w as i32]);
                 }
             }
             if w != u {
