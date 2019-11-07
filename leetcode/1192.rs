@@ -1,6 +1,27 @@
+// There are n servers numbered from 0 to n-1 connected by undirected server-to-server
+// connections forming a network where connections[i] = [a, b] represents a connection
+// between servers a and b. Any server can reach any other server directly or
+// indirectly through the network.
+//
+// A critical connection is a connection that, if removed, will make some server unable to
+// reach some other server.
+//
+// Return all critical connections in the network in any order.
+//
+// Ex.
+// Input: n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]
+// Output: [[1,3]]
+// Explanation: [[3,1]] is also accepted.
+//
+// Constraints:
+// 1 <= n <= 10^5
+// n-1 <= connections.length <= 10^5
+// connections[i][0] != connections[i][1]
+// There are no repeated connections.
+
 use std::cmp::min;
 
-// Finds all bridges in a undirected graph.
+// Finds all bridges in an undirected graph.
 impl Solution {
     pub fn critical_connections(n: i32, connections: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
         let mut adj: Vec<Vec<usize>> = vec![Vec::new(); n as usize];
