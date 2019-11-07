@@ -9,15 +9,19 @@
 // Return all critical connections in the network in any order.
 //
 // Example:
-// Input: n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]
-// Output: [[1,3]]
-// Explanation: [[3,1]] is also accepted.
+//   Input: n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]
+//   Output: [[1,3]]
+//   Explanation: [[3,1]] is also accepted.
+// 
+//     0 - 1 - 3
+//      \ /
+//       2
 //
 // Constraints:
-// 1 <= n <= 10^5
-// n-1 <= connections.length <= 10^5
-// connections[i][0] != connections[i][1]
-// There are no repeated connections.
+//   1 <= n <= 10^5
+//   n-1 <= connections.length <= 10^5
+//   connections[i][0] != connections[i][1]
+//   There are no repeated connections.
 
 use std::cmp::min;
 
