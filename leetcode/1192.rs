@@ -3,8 +3,8 @@
 // between servers a and b. Any server can reach any other server directly or
 // indirectly through the network.
 //
-// A critical connection is a connection that, if removed, will make some server unable to
-// reach some other server.
+// A critical connection is a connection that, if removed, will make some server unable
+// to reach some other server.
 //
 // Return all critical connections in the network in any order.
 //
