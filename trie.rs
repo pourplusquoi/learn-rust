@@ -34,15 +34,15 @@ impl Trie {
         }
     }
 
-    pub fn insert(&mut self, word: &str) -> () {
-        Trie::insert_inl(&mut self.root, word);
+    pub fn insert(&mut self, word: &str) {
+        Self::insert_inl(&mut self.root, word);
     }
 
     pub fn find(&self, word: &str) -> bool {
-        Trie::find_inl(&self.root, word)
+        Self::find_inl(&self.root, word)
     }
 
-    fn insert_inl(node: &mut Option<Box<Node>>, remain: &str) -> () {
+    fn insert_inl(node: &mut Option<Box<Node>>, remain: &str) {
         let node_mut: &mut Node = node.as_mut().unwrap().borrow_mut();
         if remain.is_empty() {
             node_mut.in_dict = true;
@@ -52,7 +52,7 @@ impl Trie {
             if child.is_none() {
                 *child = Some(Box::new(Node::new()));
             }
-            Trie::insert_inl(child, &remain[1..]);
+            Self::insert_inl(child, &remain[1..]);
         }
     }
 
@@ -64,7 +64,7 @@ impl Trie {
                     inner.in_dict
                 } else {
                     let index = remain.chars().next().unwrap() as usize;
-                    Trie::find_inl(&inner.children[index], &remain[1..])
+                    Self::find_inl(&inner.children[index], &remain[1..])
                 }
             }
             &None => false
