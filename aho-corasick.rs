@@ -1,6 +1,6 @@
 use std::borrow::Borrow;
 use std::borrow::BorrowMut;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::ptr;
 
 type BeginAt = usize;
@@ -160,18 +160,21 @@ fn main() {
   let dict = vec!["a", "ab", "bab", "bc", "bca", "c", "caa"];
   let text = "abccab";
 
+  println!("Constructing automaton");
   let matcher = Automaton::new(&dict);
-  let hits = matcher.scan("abccab");
-  println!("Found {} hit(s) in total in '{}'.", hits.len(), text);
 
-  let mut results: HashMap<&str, Vec<BeginAt>> = HashMap::new();
+  println!("Scanning text: {}", text);
+  let hits = matcher.scan("abccab");
+
+  println!("Found {} hit(s) in total in '{}'.", hits.len(), text);
+  let mut stats: BTreeMap<&str, Vec<BeginAt>> = BTreeMap::new();
   for hit in hits.iter() {
     let entry =
-        results.entry(&text[hit.0..hit.1]).or_insert(Vec::new());
+        stats.entry(&text[hit.0..hit.1]).or_insert(Vec::new());
     entry.push(hit.0);
   }
-  for (k, v) in results.iter() {
-    print!("Occurrance of '{}': ", k);
+  for (k, v) in stats.iter() {
+    print!("Found occurrance(s) of '{}': ", k);
     for begin_at in v.iter() {
       print!("@{} ", begin_at);
     }
