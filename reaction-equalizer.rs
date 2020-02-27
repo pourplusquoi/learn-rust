@@ -251,7 +251,7 @@ fn parse_recursive(element: &str) -> (HashMap<String, i32>, usize) {
                        &mut cluster_literal, &mut num_literal);
         }
 
-        if ((ch >= 'A' && ch <= 'Z') || ch == '(' || ch == '$')
+        if ((ch >= 'A' && ch <= 'Z') || ch == '(' || ch == ')' || ch == '$')
             && num_literal == 0 {
             update_res(&mut res, &mut elem_literal,
                        &mut cluster_literal, &mut 1);
