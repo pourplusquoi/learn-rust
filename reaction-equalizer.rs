@@ -118,7 +118,7 @@ fn reduce_forward(mut mat: Vec<Vec<i32>>, row_idx: usize) -> Vec<Vec<i32>> {
             // Already reduced.
             continue;
         }
-        mat = reduce_row_wrt(mat, row_idx, i, start_col_idx);
+        mat = reduce_wrt(mat, row_idx, i, start_col_idx);
     }
     bubble_up(mat, row_idx + 1)
 }
@@ -135,7 +135,7 @@ fn reduce_backward(mut mat: Vec<Vec<i32>>, row_idx: usize) -> Vec<Vec<i32>> {
             // Already reduced.
             continue;
         }
-        mat = reduce_row_wrt(mat, row_idx, i, start_col_idx);
+        mat = reduce_wrt(mat, row_idx, i, start_col_idx);
     }
     
     let divisor = gcd(&mat[row_idx][start_col_idx..]);
@@ -145,7 +145,7 @@ fn reduce_backward(mut mat: Vec<Vec<i32>>, row_idx: usize) -> Vec<Vec<i32>> {
     mat
 }
 
-fn reduce_row_wrt(mut mat: Vec<Vec<i32>>,
+fn reduce_wrt(mut mat: Vec<Vec<i32>>,
                   upper: usize, lower: usize,
                   start_col_idx: usize) -> Vec<Vec<i32>> {
     let lcm =
@@ -257,16 +257,20 @@ fn parse_recursive(element: &str) -> (HashMap<String, i32>, usize) {
                        &mut cluster_literal, &mut 1);
         }
 
-        if ch == '(' {
-            let (sub_res, len) = parse_recursive(&element[idx..]);
-            cluster_literal = Some(sub_res);
-            idx += len;
-        } else if ch == ')' || ch == '$' {
-            return (res, idx);
-        } else {
-            elem_literal =
-                Some(elem_literal.map_or(
-                    ch.to_string(), |elem| elem + &ch.to_string()));
+        match ch {
+            '(' => {
+                let (sub_res, len) = parse_recursive(&element[idx..]);
+                cluster_literal = Some(sub_res);
+                idx += len;
+            },
+            ')' | '$' => {
+                return (res, idx);
+            },
+            _ => {
+                elem_literal =
+                    Some(elem_literal.map_or(
+                        ch.to_string(), |elem| elem + &ch.to_string()));
+            }
         }
     }
     (res, element.len())
@@ -330,12 +334,12 @@ fn equalize(lhs: &Vec<&str>, rhs: &Vec<&str>) -> Vec<String> {
 
     let mut res: Vec<String> = Vec::new();
     for basis in bases.iter() {
-        res.push(format_equation(basis, lhs, rhs));
+        res.push(compose_equation(basis, lhs, rhs));
     }
     res
 }
 
-fn format_equation(basis: &Vec<i32>,
+fn compose_equation(basis: &Vec<i32>,
                    lhs: &Vec<&str>, rhs: &Vec<&str>) -> String {
     let mut equation = String::new();
     for (idx, matter) in lhs.iter().enumerate() {
