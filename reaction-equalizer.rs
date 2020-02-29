@@ -10,19 +10,19 @@ fn main() {
     let lhs = vec!["Pb(N2)3$", "Cr(MnO4)2$"];
     let rhs = vec!["Cr2O3$", "MnO2$", "Pb3O4$", "NO$"];
 
-    // [Expected Output]
-    // Found 1 linearly independent solution(s):
-    // 15 Pb(N2)3 + 44 Cr(MnO4)2 == 22 Cr2O3 + 88 MnO2 + 5 Pb3O4 + 90 NO 
-
     /*********************************************************************/
     /*********************************************************************/
     /*********************************************************************/
 
+    println!(">>> Input Parsed");
+    println!("{}\n", compose_reaction(&lhs, &rhs));
+
+    println!(">>> Solution Emitted");
     let equations = equalize(&lhs, &rhs);
     if equations.is_empty() {
-        println!("Impossible");
+        println!("Impossible.");
     } else {
-        println!("Found {} linearly independent solution(s):", equations.len());
+        println!("Found {} linearly independent solution(s).", equations.len());
         for equation in equations {
             println!("{}", equation);
         }
@@ -33,7 +33,7 @@ fn main() {
 /********************************** Nullspace *********************************/
 /******************************************************************************/
 
-// Gets the bases of nullspace for the given matrix.
+// Calculates the bases of nullspace for the given matrix.
 fn nullspace(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     mat = reduce(mat);
     let mut bases: Vec<Vec<i32>> = Vec::new();
@@ -57,7 +57,8 @@ fn nullspace(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
 }
 
 fn calculate_basis(mat: &Vec<Vec<i32>>,
-                   independent: &HashSet<usize>, idx: usize) -> Vec<i32> {
+                   independent: &HashSet<usize>,
+                   selected_idx: usize) -> Vec<i32> {
     let cols = mat[0].len();
     let mut coefficients: Vec<i32> = Vec::new();
     for row in mat.iter() {
@@ -68,29 +69,30 @@ fn calculate_basis(mat: &Vec<Vec<i32>>,
         }
     }
     let mut basis = vec![0; cols];
-    basis[idx] = lcm(&coefficients);
+    basis[selected_idx] = lcm(&coefficients);
     for row in mat.iter() {
         let mut lhs = 0;
         let mut rhs = 0;
         let mut var_idx = 0;
         for (col_idx, num) in row.iter().enumerate() {
-            if col_idx == idx {
+            if col_idx == selected_idx {
                 rhs = -num;
             } else if *num != 0 && !independent.contains(&col_idx) {
                 lhs = *num;
                 var_idx = col_idx;
             }
         }
-        basis[var_idx] = rhs * basis[idx] / lhs;
+        // Avoid deviding by zero.
+        if lhs == 0 {
+            panic!("The dimension of nullspace is 0.");
+        }
+        basis[var_idx] = rhs * basis[selected_idx] / lhs;
     }
     basis
 }
 
-// Reduces the matrix to the simplest form.
+// Reduces the matrix to the simplest form using elementary row operations.
 fn reduce(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-    // Note: The first row cannot start with zero.
-    mat = bubble_up(mat, 0);
-
     let rows = mat.len();
     for idx in 0..rows {
         mat = reduce_forward(mat, idx);
@@ -102,6 +104,9 @@ fn reduce(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
 }
 
 fn reduce_forward(mut mat: Vec<Vec<i32>>, row_idx: usize) -> Vec<Vec<i32>> {
+    // Bring the row with the least leading zeros up.
+    mat = bubble_up(mat, row_idx);
+
     let cols = mat[row_idx].len();
     let start_col_idx = count_leading_zero(&mat[row_idx]);
     if start_col_idx >= cols {
@@ -120,7 +125,7 @@ fn reduce_forward(mut mat: Vec<Vec<i32>>, row_idx: usize) -> Vec<Vec<i32>> {
         }
         mat = reduce_wrt(mat, row_idx, i, start_col_idx);
     }
-    bubble_up(mat, row_idx + 1)
+    mat
 }
 
 fn reduce_backward(mut mat: Vec<Vec<i32>>, row_idx: usize) -> Vec<Vec<i32>> {
@@ -263,9 +268,11 @@ fn parse_recursive(element: &str) -> (HashMap<String, i32>, usize) {
                 cluster_literal = Some(sub_res);
                 idx += len;
             },
+
             ')' | '$' => {
                 return (res, idx);
             },
+
             _ => {
                 elem_literal =
                     Some(elem_literal.map_or(
@@ -340,7 +347,8 @@ fn equalize(lhs: &Vec<&str>, rhs: &Vec<&str>) -> Vec<String> {
 }
 
 fn compose_equation(basis: &Vec<i32>,
-                   lhs: &Vec<&str>, rhs: &Vec<&str>) -> String {
+                    lhs: &Vec<&str>,
+                    rhs: &Vec<&str>) -> String {
     let mut equation = String::new();
     for (idx, matter) in lhs.iter().enumerate() {
         equation += &format!("{} {} ", basis[idx], drop_tail(matter));
@@ -353,6 +361,25 @@ fn compose_equation(basis: &Vec<i32>,
     for (idx, matter) in rhs.iter().enumerate() {
         let real_idx = idx + lhs.len();
         equation += &format!("{} {} ", basis[real_idx], drop_tail(matter));
+        if idx < rhs.len() - 1 {
+            equation += "+ ";
+        }
+    }
+    equation
+}
+
+fn compose_reaction(lhs: &Vec<&str>, rhs: &Vec<&str>) -> String {
+    let mut equation = String::new();
+    for (idx, matter) in lhs.iter().enumerate() {
+        equation += &format!("{} ", drop_tail(matter));
+        if idx < lhs.len() - 1 {
+            equation += "+ ";
+        } else {
+            equation += "-> ";
+        }
+    }
+    for (idx, matter) in rhs.iter().enumerate() {
+        equation += &format!("{} ", drop_tail(matter));
         if idx < rhs.len() - 1 {
             equation += "+ ";
         }
