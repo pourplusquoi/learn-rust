@@ -17,6 +17,9 @@ fn main() {
     /*********************************************************************/
     /*********************************************************************/
 
+    sanitary_check(&lhs);
+    sanitary_check(&rhs);
+
     println!(">>> Input Parsed");
     println!("{}\n", compose_reaction(&lhs, &rhs));
 
@@ -87,7 +90,8 @@ fn calculate_basis(mat: &Vec<Vec<i32>>,
         }
         // Avoid deviding by zero.
         if lhs == 0 {
-            panic!("The dimension of nullspace is 0.");
+            println!("The dimension of nullspace is 0. Impossible.");
+            panic!("Failed Precondition");
         }
         basis[var_idx] = rhs * basis[selected_idx] / lhs;
     }
@@ -405,6 +409,18 @@ fn make_matrix(all_elems: &HashSet<String>,
         mat.push(row);
     }
     mat
+}
+
+fn sanitary_check(array: &Vec<&str>) {
+    for matter in array.iter() {
+        match matter.chars().last() {
+            Some('$') => (),
+            _ => {
+                println!("Please change `{}` into `{}$`.", matter, matter);
+                panic!("Invalid Argument");
+            }
+        }
+    }
 }
 
 fn drop_tail<'a>(s: &'a str) -> &'a str {
