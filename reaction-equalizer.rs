@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 use std::collections::HashMap;
 
-// Try this out on Rust Playground
-// https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=7080b12c85a5cc299202e6078b25a0e9
+// Try this out on Rust Playground:
+// https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=dd6abd7ae9b50c678e7dd7358d966752
 
 fn main() {
 
@@ -17,8 +17,11 @@ fn main() {
     /*********************************************************************/
     /*********************************************************************/
 
-    sanitary_check(&lhs);
-    sanitary_check(&rhs);
+    let lhs_check = sanitary_check(&lhs);
+    let rhs_check = sanitary_check(&rhs);
+    if !lhs_check || !rhs_check {
+        panic!("Invalid Argument");
+    }
 
     println!(">>> Input Parsed");
     println!("{}\n", compose_reaction(&lhs, &rhs));
@@ -94,6 +97,10 @@ fn calculate_basis(mat: &Vec<Vec<i32>>,
             panic!("Failed Precondition");
         }
         basis[var_idx] = rhs * basis[selected_idx] / lhs;
+    }
+    let divisor = gcd(&basis);
+    for num in basis.iter_mut() {
+        (*num) /= divisor;
     }
     basis
 }
@@ -411,16 +418,17 @@ fn make_matrix(all_elems: &HashSet<String>,
     mat
 }
 
-fn sanitary_check(array: &Vec<&str>) {
+fn sanitary_check(array: &Vec<&str>) -> bool {
     for matter in array.iter() {
         match matter.chars().last() {
             Some('$') => (),
             _ => {
                 println!("Please change `{}` into `{}$`.", matter, matter);
-                panic!("Invalid Argument");
+                return false;
             }
         }
     }
+    true
 }
 
 fn drop_tail<'a>(s: &'a str) -> &'a str {
