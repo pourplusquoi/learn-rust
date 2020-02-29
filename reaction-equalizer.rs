@@ -1,6 +1,9 @@
 use std::collections::HashSet;
 use std::collections::HashMap;
 
+// Try this out on Rust Playground
+// https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=7080b12c85a5cc299202e6078b25a0e9
+
 fn main() {
 
     /*********************************************************************/
