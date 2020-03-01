@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::collections::HashMap;
 
 // Try this out on Rust Playground:
-// https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=dd6abd7ae9b50c678e7dd7358d966752
+// https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=3b7664d6e130d92d9fe0c72c2c2eee25
 
 fn main() {
 
@@ -419,16 +419,17 @@ fn make_matrix(all_elems: &HashSet<String>,
 }
 
 fn sanitary_check(array: &Vec<&str>) -> bool {
+    let mut valid = true;
     for matter in array.iter() {
         match matter.chars().last() {
             Some('$') => (),
             _ => {
                 println!("Please change `{}` into `{}$`.", matter, matter);
-                return false;
+                valid = false;
             }
         }
     }
-    true
+    valid
 }
 
 fn drop_tail<'a>(s: &'a str) -> &'a str {
