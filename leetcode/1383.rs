@@ -39,12 +39,12 @@ impl Solution {
     engs.sort_by(|x, y| y.eff.cmp(&x.eff));
     let mut max_perf: u64 = 0;
     let mut sum_spd: u64 = 0;
-    let mut pq: BinaryHeap<Engineer> = BinaryHeap::new();
+    let mut heap = BinaryHeap::new();
     for i in (0..n).map(|x| x as usize) {
-      pq.push(engs[i]);
+      heap.push(engs[i]);
       sum_spd += engs[i].spd as u64;
-      if pq.len() > k as usize {
-        sum_spd -= pq.pop().unwrap().spd as u64;
+      if heap.len() > k as usize {
+        sum_spd -= heap.pop().unwrap().spd as u64;
       }
       max_perf = max(max_perf, sum_spd * engs[i].eff as u64);
     }
