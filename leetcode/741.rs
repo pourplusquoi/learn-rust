@@ -46,3 +46,52 @@ impl SolutionTLE {
     grid[cur.0][cur.1] = original;
   }
 }
+
+impl SolutionUglyDP {
+  pub fn cherry_pickup(grid: Vec<Vec<i32>>) -> i32 {
+    let n = grid.len();
+    let mut dp = vec![vec![vec![-2; n]; n]; n];
+    dp[n - 1][n - 1][n - 1] = grid[n - 1][n - 1];
+    max(0, Self::solve(&grid, &mut dp, 0, 0, 0))
+  }
+  
+  fn solve(grid: &Vec<Vec<i32>>, dp: &mut Vec<Vec<Vec<i32>>>, r1: usize, c1: usize, r2: usize) -> i32 {
+    let mut entry = dp[r1][c1][r2];
+    if entry >= -1 {
+      return entry;
+    }
+    
+    let n = grid.len();
+    let c2 = r1 + c1 - r2;
+    
+    if r1 + 1 < n && r2 + 1 < n
+        && grid[r1 + 1][c1] != -1 && grid[r2 + 1][c2] != -1 {
+      entry = max(entry, Self::solve(grid, dp, r1 + 1, c1, r2 + 1));
+    }
+    if r1 + 1 < n && c2 + 1 < n
+        && grid[r1 + 1][c1] != -1 && grid[r2][c2 + 1] != -1 {
+      entry = max(entry, Self::solve(grid, dp, r1 + 1, c1, r2));
+    }
+    if c1 + 1 < n && r2 + 1 < n
+        && grid[r1][c1 + 1] != -1 && grid[r2 + 1][c2] != -1 {
+      entry = max(entry, Self::solve(grid, dp, r1, c1 + 1, r2 + 1));
+    }
+    if c1 + 1 < n && c2 + 1 < n
+        && grid[r1][c1 + 1] != -1 && grid[r2][c2 + 1] != -1 {
+      entry = max(entry, Self::solve(grid, dp, r1, c1 + 1, r2));
+    }
+    
+    if entry >= 0 {
+      if r1 == r2 && c1 == c2 {
+        entry += grid[r1][c1];
+      } else {
+        entry += grid[r1][c1] + grid[r2][c2];
+      }
+    } else {
+      entry = -1;
+    }
+    
+    dp[r1][c1][r2] = entry;
+    entry
+  }
+}
