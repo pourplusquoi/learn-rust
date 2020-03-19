@@ -2,7 +2,6 @@ use std::cmp::max;
 use std::cmp::min;
 use std::collections::HashSet;
 
-
 impl SolutionBottomUpDP {
   pub fn cherry_pickup(grid: Vec<Vec<i32>>) -> i32 {
     let n = grid.len();
