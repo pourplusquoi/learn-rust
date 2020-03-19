@@ -95,14 +95,12 @@ impl Response {
   }
 }
 
-type WrappedTreeNode = Option<Rc<RefCell<TreeNode>>>;
-
 impl Solution {
   pub fn max_sum_bst(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
     Self::traverse(&root).max_sum()
   }
   
-  fn traverse(node: &WrappedTreeNode) -> Response {
+  fn traverse(node: &Option<Rc<RefCell<TreeNode>>>) -> Response {
     match *node {
       None => Response::Valid {
         total: 0,
