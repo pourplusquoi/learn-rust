@@ -55,7 +55,9 @@ impl SolutionUglyDP {
     max(0, Self::solve(&grid, &mut dp, 0, 0, 0))
   }
   
-  fn solve(grid: &Vec<Vec<i32>>, dp: &mut Vec<Vec<Vec<i32>>>, r1: usize, c1: usize, r2: usize) -> i32 {
+  fn solve(grid: &Vec<Vec<i32>>,
+           dp: &mut Vec<Vec<Vec<i32>>>,
+           r1: usize, c1: usize, r2: usize) -> i32 {
     let mut entry = dp[r1][c1][r2];
     if entry >= -1 {
       return entry;
