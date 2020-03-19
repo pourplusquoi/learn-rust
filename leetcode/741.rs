@@ -84,10 +84,9 @@ impl SolutionUglyDP {
     }
     
     if entry >= 0 {
-      if r1 == r2 && c1 == c2 {
-        entry += grid[r1][c1];
-      } else {
-        entry += grid[r1][c1] + grid[r2][c2];
+      entry += grid[r1][c1];
+      if r1 != r2 || c1 != c2 {
+        entry += grid[r2][c2];
       }
     } else {
       entry = -1;
