@@ -8,8 +8,7 @@ impl Solution {
     let mut state = 0;
     let mut memo = HashMap::new();
     memo.insert(0, 0);
-    for i in 0..s.len() {
-      let c = s.chars().nth(i).unwrap();
+    for (i, c) in s.chars().enumerate() {
       state ^= match "aeiou".find(c) {
         None => 0,
         Some(idx) => 1 << idx,
