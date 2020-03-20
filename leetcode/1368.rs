@@ -5,12 +5,12 @@ static map: [(i32, i32); 4] = [(0, 1), (0, -1), (1, 0), (-1, 0)];
 
 impl Solution {
   pub fn min_cost(grid: Vec<Vec<i32>>) -> i32 {
+    let m = grid.len() as i32;
+    let n = grid[0].len() as i32;
     let mut queue = VecDeque::new();
     let mut seen = HashSet::new();
     Self::expand(&grid, &mut queue, &mut seen, (0, 0));
     
-    let m = grid.len() as i32;
-    let n = grid[0].len() as i32;
     let mut count = 0;
     while !queue.is_empty() {
       if seen.contains(&(m - 1, n - 1)) {
