@@ -24,14 +24,15 @@ impl Solution {
   }
   
   fn compute(nums: &Vec<i32>, len: usize) -> Vec<Vec<i32>> {
-    let mut dp = vec![Vec::new(); len + 1];
+    let mut dp = vec![Vec::new(); 1];
     for num in nums.iter() {
-      let mut cp = dp.to_vec();
-      for j in 1..=len {
-        let mut tmp = dp[j - 1].to_vec();
-        tmp.push(*num);
-        if &tmp > &dp[j] {
-          cp[j] = tmp;
+      let mut cp = vec![Vec::new(); 1];
+      for j in 1..=dp.len() {
+        dp[j - 1].push(*num);
+        if j == dp.len() || &dp[j - 1] > &dp[j] {
+          cp.push(dp[j - 1].to_vec());
+        } else {
+          cp.push(dp[j].to_vec());
         }
       }
       dp = cp;
