@@ -76,8 +76,8 @@ impl Solution {
   }
   
   fn push(nums: &Vec<i32>, res: &mut Vec<i32>, i: &mut usize) {
-    res.push(nums[i]);
-    i += 1;
+    res.push(nums[*i]);
+    *i += 1;
   }
   
   fn greater(lhs: &Vec<i32>, rhs: &Vec<i32>) -> bool {
