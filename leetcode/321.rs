@@ -6,8 +6,7 @@ use std::cmp::min;
 impl Solution {
   pub fn max_number(nums1: Vec<i32>, nums2: Vec<i32>, k_: i32) -> Vec<i32> {
     let k = k_ as usize;
-    let m = nums1.len();
-    let n = nums2.len();
+    let (m, n) = (nums1.len(), nums2.len());
     let dp1 = Self::compute(&nums1, min(m, k));
     let dp2 = Self::compute(&nums2, min(n, k));
     let mut res = vec![0; k];
@@ -17,7 +16,7 @@ impl Solution {
         continue;
       }
       let cand = Self::merge(&dp1[i], &dp2[j]);
-      if Self::greater(&cand, &res) {
+      if &cand > &res {
         res = cand;
       }
     }
@@ -31,7 +30,7 @@ impl Solution {
       for j in 1..=len {
         let mut tmp = dp[j - 1].to_vec();
         tmp.push(*num);
-        if Self::greater(&tmp, &dp[j]) {
+        if &tmp > &dp[j] {
           cp[j] = tmp;
         }
       }
@@ -42,56 +41,35 @@ impl Solution {
   
   // Self::merge is extremely ugly and takes O(N^2) time in the worst case...
   fn merge(nums1: &Vec<i32>, nums2: &Vec<i32>) -> Vec<i32> {
-    let m = nums1.len();
-    let n = nums2.len();
+    let (m, n) = (nums1.len(), nums2.len());
     let mut i = 0;
     let mut j = 0;
     let mut res = Vec::new();
     while i < m || j < n {
       if i == m {
-        Self::push(nums2, &mut res, &mut j);
+        res.append(&mut Vec::from(&nums2[j..]));
+        return res;
       } else if j == n {
-        Self::push(nums1, &mut res, &mut i);
+        res.append(&mut Vec::from(&nums1[i..]));
+        return res;
       } else {
         if nums1[i] > nums2[j] {
-          Self::push(nums1, &mut res, &mut i);
+          res.push(nums1[i]);
+          i += 1;
         } else if nums1[i] < nums2[j] {
-          Self::push(nums2, &mut res, &mut j);
-        } else {
-          let mut i_ = i;
-          let mut j_ = j;
-          while i_ < m && j_ < n && nums1[i_] == nums2[j_] {
-            i_ += 1;
-            j_ += 1;
-          }
-          if j_ >= n || (i_ < m && nums1[i_] > nums2[j_]) {
-            Self::push(nums1, &mut res, &mut i);
+          res.push(nums2[j]);
+          j += 1;
+        } else {  // nums1[i] == nums2[j]
+          if &nums1[i..] > &nums2[j..] {
+            res.push(nums1[i]);
+            i += 1;
           } else {
-            Self::push(nums2, &mut res, &mut j);
+            res.push(nums2[j]);
+            j += 1;
           }
         }
       }
     }
     res
-  }
-  
-  fn push(nums: &Vec<i32>, res: &mut Vec<i32>, i: &mut usize) {
-    res.push(nums[*i]);
-    *i += 1;
-  }
-  
-  fn greater(lhs: &Vec<i32>, rhs: &Vec<i32>) -> bool {
-    if lhs.len() != rhs.len() {
-      return lhs.len() > rhs.len();
-    }
-    for (x, y) in lhs.iter().zip(rhs.iter()) {
-      if x > y {
-        return true;
-      }
-      if x < y {
-        return false;
-      }
-    }
-    false
   }
 }
