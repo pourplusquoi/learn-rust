@@ -17,11 +17,9 @@ impl Solution {
     while lo1 < hi1 {
       let d1 = lo1 + (hi1 - lo1) / 2;
       let d2 = half - d1;
-      if d2 < 0 || (d2 < n
-          && nums1[(d1 - 1) as usize] > nums2[d2 as usize]) {
+      if d2 < 0 || (d2 < n && nums1[(d1 - 1) as usize] > nums2[d2 as usize]) {
         hi1 = d1;
-      } else if d2 > n || (d2 > 0
-          && nums2[(d2 - 1) as usize] > nums1[d1 as usize]) {
+      } else if d2 > n || (d2 > 0 && nums2[(d2 - 1) as usize] > nums1[d1 as usize]) {
         lo1 = d1 + 1;
       } else {
         lo1 = d1;
