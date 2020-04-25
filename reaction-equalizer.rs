@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::collections::HashMap;
 
 // Try this out on Rust Playground:
-// https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=3b7664d6e130d92d9fe0c72c2c2eee25
+// https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=4961525cc9eb9ce83461201cdabb7e71
 
 fn main() {
 
@@ -90,6 +90,9 @@ fn calculate_basis(mat: &Vec<Vec<i32>>,
                 lhs = *num;
                 var_idx = col_idx;
             }
+        }
+        if lhs == 0 && rhs == 0 {
+            continue;
         }
         // Avoid deviding by zero.
         if lhs == 0 {
