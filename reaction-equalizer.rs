@@ -94,7 +94,7 @@ fn calculate_basis(mat: &Vec<Vec<i32>>,
         if lhs == 0 && rhs == 0 {
             continue;
         }
-        // Avoid deviding by zero.
+        // Avoid dividing by zero.
         if lhs == 0 {
             println!("The dimension of nullspace is 0. Impossible.");
             panic!("Failed Precondition");
