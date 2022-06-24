@@ -1,11 +1,10 @@
-use std::collections::HashSet;
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 // Try this out on Rust Playground:
 // https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=4961525cc9eb9ce83461201cdabb7e71
 
 fn main() {
-
     /*********************************************************************/
     /************************** User Input Area **************************/
     /*********************************************************************/
@@ -31,7 +30,10 @@ fn main() {
     if equations.is_empty() {
         println!("Impossible.");
     } else {
-        println!("Found {} linearly independent solution(s).", equations.len());
+        println!(
+            "Found {} linearly independent solution(s).",
+            equations.len()
+        );
         for equation in equations {
             println!("{}", equation);
         }
@@ -65,9 +67,11 @@ fn nullspace(mut mat: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     bases
 }
 
-fn calculate_basis(mat: &Vec<Vec<i32>>,
-                   independent: &HashSet<usize>,
-                   selected_idx: usize) -> Vec<i32> {
+fn calculate_basis(
+    mat: &Vec<Vec<i32>>,
+    independent: &HashSet<usize>,
+    selected_idx: usize,
+) -> Vec<i32> {
     let cols = mat[0].len();
     let mut coefficients: Vec<i32> = Vec::new();
     for row in mat.iter() {
@@ -159,7 +163,7 @@ fn reduce_backward(mut mat: Vec<Vec<i32>>, row_idx: usize) -> Vec<Vec<i32>> {
         }
         mat = reduce_wrt(mat, row_idx, i, start_col_idx);
     }
-    
+
     let divisor = gcd(&mat[row_idx][start_col_idx..]);
     for num in mat[row_idx].iter_mut() {
         (*num) /= divisor;
@@ -167,18 +171,19 @@ fn reduce_backward(mut mat: Vec<Vec<i32>>, row_idx: usize) -> Vec<Vec<i32>> {
     mat
 }
 
-fn reduce_wrt(mut mat: Vec<Vec<i32>>,
-                  upper: usize, lower: usize,
-                  start_col_idx: usize) -> Vec<Vec<i32>> {
-    let lcm =
-        num::integer::lcm(mat[upper][start_col_idx], mat[lower][start_col_idx]);
+fn reduce_wrt(
+    mut mat: Vec<Vec<i32>>,
+    upper: usize,
+    lower: usize,
+    start_col_idx: usize,
+) -> Vec<Vec<i32>> {
+    let lcm = num::integer::lcm(mat[upper][start_col_idx], mat[lower][start_col_idx]);
     let lower_multiplier = lcm / mat[lower][start_col_idx];
     let upper_multiplier = lcm / mat[upper][start_col_idx];
 
     let mut temp: Vec<i32> = Vec::new();
     for (lower_num, upper_num) in mat[lower].iter().zip(mat[upper].iter()) {
-        let num =
-            (*lower_num) * lower_multiplier - (*upper_num) * upper_multiplier;
+        let num = (*lower_num) * lower_multiplier - (*upper_num) * upper_multiplier;
         temp.push(num);
     }
 
@@ -269,14 +274,16 @@ fn parse_recursive(element: &str) -> (HashMap<String, i32>, usize) {
         }
 
         if num_literal > 0 {
-            update_res(&mut res, &mut elem_literal,
-                       &mut cluster_literal, &mut num_literal);
+            update_res(
+                &mut res,
+                &mut elem_literal,
+                &mut cluster_literal,
+                &mut num_literal,
+            );
         }
 
-        if ((ch >= 'A' && ch <= 'Z') || ch == '(' || ch == ')' || ch == '$')
-            && num_literal == 0 {
-            update_res(&mut res, &mut elem_literal,
-                       &mut cluster_literal, &mut 1);
+        if ((ch >= 'A' && ch <= 'Z') || ch == '(' || ch == ')' || ch == '$') && num_literal == 0 {
+            update_res(&mut res, &mut elem_literal, &mut cluster_literal, &mut 1);
         }
 
         match ch {
@@ -284,24 +291,27 @@ fn parse_recursive(element: &str) -> (HashMap<String, i32>, usize) {
                 let (sub_res, len) = parse_recursive(&element[idx..]);
                 cluster_literal = Some(sub_res);
                 idx += len;
-            },
+            }
 
             ')' | '$' => {
                 return (res, idx);
-            },
+            }
 
             _ => {
                 elem_literal =
-                    Some(elem_literal.map_or(
-                        ch.to_string(), |elem| elem + &ch.to_string()));
+                    Some(elem_literal.map_or(ch.to_string(), |elem| elem + &ch.to_string()));
             }
         }
     }
     (res, element.len())
 }
 
-fn update_res(res: &mut HashMap<String, i32>, elem: &mut Option<String>,
-              cluster: &mut Option<HashMap<String, i32>>, num: &mut i32) {
+fn update_res(
+    res: &mut HashMap<String, i32>,
+    elem: &mut Option<String>,
+    cluster: &mut Option<HashMap<String, i32>>,
+    num: &mut i32,
+) {
     if !(elem.is_none() ^ cluster.is_none()) {
         // elem and cluster both are none or both are some.
         return;
@@ -323,8 +333,7 @@ fn update_res_elem(res: &mut HashMap<String, i32>, elem: &str, num: i32) {
     *count += num;
 }
 
-fn update_res_cluster(res: &mut HashMap<String, i32>,
-                      cluster: &HashMap<String, i32>, num: i32) {
+fn update_res_cluster(res: &mut HashMap<String, i32>, cluster: &HashMap<String, i32>, num: i32) {
     for (elem, cnt) in cluster.iter() {
         let count = res.entry(String::from(elem)).or_insert(0);
         *count += num * cnt;
@@ -363,9 +372,7 @@ fn equalize(lhs: &Vec<&str>, rhs: &Vec<&str>) -> Vec<String> {
     res
 }
 
-fn compose_equation(basis: &Vec<i32>,
-                    lhs: &Vec<&str>,
-                    rhs: &Vec<&str>) -> String {
+fn compose_equation(basis: &Vec<i32>, lhs: &Vec<&str>, rhs: &Vec<&str>) -> String {
     let mut equation = String::new();
     for (idx, matter) in lhs.iter().enumerate() {
         equation += &format!("{} {} ", basis[idx], drop_tail(matter));
@@ -404,9 +411,11 @@ fn compose_reaction(lhs: &Vec<&str>, rhs: &Vec<&str>) -> String {
     equation
 }
 
-fn make_matrix(all_elems: &HashSet<String>,
-               lhs_res: &Vec<HashMap<String, i32>>,
-               rhs_res: &Vec<HashMap<String, i32>>) -> Vec<Vec<i32>> {
+fn make_matrix(
+    all_elems: &HashSet<String>,
+    lhs_res: &Vec<HashMap<String, i32>>,
+    rhs_res: &Vec<HashMap<String, i32>>,
+) -> Vec<Vec<i32>> {
     let mut mat: Vec<Vec<i32>> = Vec::new();
     for elem in all_elems.iter() {
         let mut row: Vec<i32> = Vec::new();
@@ -435,6 +444,6 @@ fn sanitary_check(array: &Vec<&str>) -> bool {
     valid
 }
 
-fn drop_tail<'a>(s: &'a str) -> &'a str {
+fn drop_tail(s: &str) -> &str {
     &s[0..s.len() - 1]
 }
